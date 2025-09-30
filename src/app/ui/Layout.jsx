@@ -64,10 +64,20 @@ function AuthModal() {
         // RFC 7617
         const userPass = login + ':' + password;
         const credentials = Base64.encode(userPass);
-        fetch("", {
+        fetch("http://localhost:8080/JavaWeb222/user", {
             method: 'GET',
             headers: {
                 'Authorization': 'Basic ' + credentials,
+            }
+        }).then(r => r.json()).then(console.log);
+    };
+
+    const onPost = () => {
+        fetch("http://localhost:8080/JavaWeb222/user", {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Basic 123',
+                'Content-Type': "application/json"
             }
         }).then(r => r.json()).then(console.log);
     };
@@ -95,6 +105,7 @@ function AuthModal() {
                 <div className="modal-footer">
                     <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
                     <button type="submit" form="auth-form" className="btn btn-primary">Вхід</button>
+                    <button onClick={onPost} type="button" className="btn btn-secondary">POST</button>
                 </div>
                 </div>
             </div>
