@@ -1,6 +1,8 @@
 import { Link, Outlet } from "react-router-dom";
 import './Layout.css';
 import Base64 from "../../shared/base64/Base64";
+import { useContext, useRef } from "react";
+import AppContext from "../../features/appContext/AppContext";
 
 export default function Layout() {
     return <>
@@ -54,6 +56,8 @@ export default function Layout() {
 }
 
 function AuthModal() {
+    const {token, setToken} = useContext(AppContext);
+    const closeButtonRef = useRef();
 
     const onAuthSubmit = e => {
         e.preventDefault();
@@ -69,17 +73,11 @@ function AuthModal() {
             headers: {
                 'Authorization': 'Basic ' + credentials,
             }
-        }).then(r => r.json()).then(console.log);
-    };
-
-    const onPost = () => {
-        fetch("http://localhost:8080/JavaWeb222/user", {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Basic 123',
-                'Content-Type': "application/json"
-            }
-        }).then(r => r.json()).then(console.log);
+        }).then(r => r.text()).then(jwt => {
+            console.log(jwt);
+            setToken(jwt);
+            closeButtonRef.current.click();
+        });
     };
 
     return <div className="modal fade" id="authModal" tabIndex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
@@ -103,9 +101,8 @@ function AuthModal() {
                     </form>
                 </div>
                 <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
-                    <button type="submit" form="auth-form" className="btn btn-primary">Вхід</button>
-                    <button onClick={onPost} type="button" className="btn btn-secondary">POST</button>
+                    <button ref={closeButtonRef} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                    <button type="submit" form="auth-form" className="btn btn-primary">Вхід</button>                    
                 </div>
                 </div>
             </div>
