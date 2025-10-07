@@ -4,6 +4,7 @@ import Home from '../pages/home/Home';
 import Privacy from '../pages/privacy/Privacy';
 import { useState } from 'react';
 import AppContext from '../features/appContext/AppContext';
+import Admin from '../pages/admin/Admin';
 
 export default function App() {
   const [token, setToken] = useState(null);
@@ -13,6 +14,7 @@ export default function App() {
       <Routes>
         <Route path='/' element={<Layout/>}>
           <Route index element={<Home />} />
+          <Route path='admin' element={<Admin />} />
           <Route path='privacy' element={<Privacy />} />
         </Route>
       </Routes>

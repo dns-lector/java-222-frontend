@@ -5,6 +5,8 @@ import { useContext, useRef } from "react";
 import AppContext from "../../features/appContext/AppContext";
 
 export default function Layout() {
+    const {token, setToken} = useContext(AppContext);
+
     return <>
         <header>
             <nav className="navbar navbar-expand-lg bg-body-tertiary border-bottom">
@@ -22,16 +24,25 @@ export default function Layout() {
                                 <li className="nav-item">
                                     <Link className="nav-link active" to="/privacy">Privacy</Link>
                                 </li>
+                                {!!token && <li className="nav-item">
+                                    <Link className="nav-link active" to="/admin">Admin</Link>
+                                </li>}
                             </ul>
                             <form className="d-flex" role="search" onSubmit={e => e.preventDefault()}>
                                 <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
                                 <button className="btn btn-outline-success" type="submit">Search</button>
                             </form>
                             <div>
-                                <button className="btn btn-outline-secondary" 
+                                {!token 
+                                ? <button className="btn btn-outline-secondary" 
                                         data-bs-toggle="modal" data-bs-target="#authModal">
                                     <i className="bi bi-box-arrow-in-right"></i>
-                                </button>
+                                  </button>
+                                : <button className="btn btn-outline-secondary" 
+                                          onClick={() => setToken(null)}>
+                                    <i className="bi bi-box-arrow-right"></i>
+                                  </button>
+                                }
                             </div>
                         </div>
                     </div>
@@ -73,10 +84,17 @@ function AuthModal() {
             headers: {
                 'Authorization': 'Basic ' + credentials,
             }
-        }).then(r => r.text()).then(jwt => {
-            console.log(jwt);
-            setToken(jwt);
-            closeButtonRef.current.click();
+        }).then(r => {
+            if(r.status == 200) {
+                r.text().then(jwt => {
+                    console.log(jwt);
+                    setToken(jwt);
+                    closeButtonRef.current.click();
+                });
+            }
+            else {
+                console.error("У вході відмовлено");
+            }
         });
     };
 
