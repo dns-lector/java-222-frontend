@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import AppContext from "../../features/appContext/AppContext";
+import { Link } from "react-router-dom";
 
 export default function Home() {
     const {token} = useContext(AppContext);
@@ -21,13 +22,15 @@ export default function Home() {
     
     <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4  row-cols-xxl-5 g-4">
         {groups.map(g => <div className="col" key={g.id}>
-            <div className="card h-100">
-            <img src={g.imageUrl} className="card-img-top" alt={g.name} />
-            <div className="card-body">
-                <h5 className="card-title">{g.name}</h5>
-                <p className="card-text">{g.description}</p>
-            </div>
-            </div>
+            <Link className="h-100" to={"/group/" + g.slug}>
+                <div className="card h-100">
+                    <img src={g.imageUrl} className="card-img-top" alt={g.name} />
+                    <div className="card-body">
+                        <h5 className="card-title">{g.name}</h5>
+                        <p className="card-text">{g.description}</p>
+                    </div>
+                </div>
+            </Link>
         </div>)}
     </div>        
     </>;

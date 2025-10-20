@@ -25,7 +25,29 @@ export default function Admin() {
 
     const onProductFormSubmit = e => {
         e.preventDefault();
-
+        fetch("http://localhost:8080/JavaWeb222/admin/product", {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            body: new FormData(e.target)
+        }).then(r => {
+            let ct = r.headers.get("Content-Type");
+            if(ct.startsWith("application/json")) {
+                r.json().then(j => {
+                    if(j == "Ok") {
+                        e.target.reset();
+                        alert("Товар додано");
+                    }
+                    else {
+                        alert(j);
+                    }
+                });
+            }
+            else {
+                r.text().then(console.log);
+            }
+        });
     }
 
     const onGroupFormSubmit = e => {
