@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import AppContext from "../../features/appContext/AppContext";
 
 export default function Group() {
     const {slug} = useParams();
     const [group, setGroup] = useState({});
+    const {request} = useContext(AppContext);
 
     useEffect(() => {
-        fetch("http://localhost:8080/JavaWeb222/groups/" + slug)
-        .then(r => r.json()).then(setGroup);
+        request("api://groups/" + slug).then(setGroup);
     }, []);
 
     return <>
@@ -15,7 +16,7 @@ export default function Group() {
     
     {group.products != null && <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4  row-cols-xxl-5 g-4">
      {group.products.map(p => <div className="col" key={p.id}>
-                 <Link className="h-100" to={"/product/" + (p.slug || p.id)}>
+                 <Link className="h-100 nav-link" to={"/product/" + (p.slug || p.id)}>
                      <div className="card h-100">
                          <img src={p.imageUrl} className="card-img-top" alt={p.name} />
                          <div className="card-body">

@@ -11,7 +11,23 @@ import Product from '../pages/product/Product';
 export default function App() {
   const [token, setToken] = useState(null);
 
-  return <AppContext.Provider value={{token, setToken}}>
+  const request = (url, conf) => new Promise((resolve, reject) => {
+    const backUrl = "http://localhost:8080/JavaWeb222/";
+    url = url.replace("api://", backUrl);
+    fetch(url, conf)
+    .then(r => r.json())
+    .then(j => {
+      if(j.status.isOk) {
+        resolve(j.data);
+      }
+      else {
+        console.error(j);
+        reject(j);
+      }
+    });
+  });
+
+  return <AppContext.Provider value={{token, setToken, request}}>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Layout/>}>
