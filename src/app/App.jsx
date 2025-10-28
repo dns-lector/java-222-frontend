@@ -14,6 +14,17 @@ export default function App() {
   const request = (url, conf) => new Promise((resolve, reject) => {
     const backUrl = "http://localhost:8080/JavaWeb222/";
     url = url.replace("api://", backUrl);
+    if(token) {
+      if(typeof conf == 'undefined') {
+        conf = {};
+      }
+      if(typeof conf.headers == 'undefined') {
+        conf.headers = {};
+      }      
+      if(typeof conf.headers['Authorization'] == 'undefined') {
+        conf.headers['Authorization'] = 'Bearer ' + token;
+      }
+    }
     fetch(url, conf)
     .then(r => r.json())
     .then(j => {
