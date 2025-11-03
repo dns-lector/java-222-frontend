@@ -5,7 +5,7 @@ import { useContext, useRef } from "react";
 import AppContext from "../../features/appContext/AppContext";
 
 export default function Layout() {
-    const {token, setToken} = useContext(AppContext);
+    const {cart, token, setToken} = useContext(AppContext);
 
     return <>
         <header>
@@ -34,14 +34,23 @@ export default function Layout() {
                             </form>
                             <div>
                                 {!token 
-                                ? <button className="btn btn-outline-secondary" 
-                                        data-bs-toggle="modal" data-bs-target="#authModal">
-                                    <i className="bi bi-box-arrow-in-right"></i>
-                                  </button>
-                                : <button className="btn btn-outline-secondary" 
-                                          onClick={() => setToken(null)}>
-                                    <i className="bi bi-box-arrow-right"></i>
-                                  </button>
+                                ? <>
+                                    <button className="btn btn-outline-secondary" 
+                                            data-bs-toggle="modal" data-bs-target="#authModal">
+                                        <i className="bi bi-box-arrow-in-right"></i>
+                                    </button>
+                                  </>
+                                : <>
+                                    <button className="btn btn-outline-success me-2 cart-btn-layout">
+                                        <i className="bi bi-cart"></i>
+                                        <span>{cart.cartItems.length}</span>
+                                    </button>
+                                    
+                                    <button className="btn btn-outline-secondary" 
+                                            onClick={() => setToken(null)}>
+                                        <i className="bi bi-box-arrow-right"></i>
+                                    </button>
+                                  </>
                                 }
                             </div>
                         </div>
@@ -67,7 +76,7 @@ export default function Layout() {
 }
 
 function AuthModal() {
-    const {token, setToken} = useContext(AppContext);
+    const { setToken } = useContext(AppContext);
     const closeButtonRef = useRef();
 
     const onAuthSubmit = e => {
@@ -126,3 +135,14 @@ function AuthModal() {
             </div>
         </div>;
 }
+/*
+Д.З. Реалізувати підказку, що спливає (title), при наведені курсора на кнопку
+віджета кошика. 
+- якщо кошик порожній, то так і виводити "У кошику немає товарів", 
+- якщо ні, то формувати міні-звіт: 
+У вашому кошику
+позицій - 3
+товарів - 7
+на загальну суму 1400
+(натисніть для оформлення)
+*/
