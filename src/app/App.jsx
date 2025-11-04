@@ -7,6 +7,7 @@ import AppContext from '../features/appContext/AppContext';
 import Admin from '../pages/admin/Admin';
 import Group from '../pages/group/Group';
 import Product from '../pages/product/Product';
+import Cart from '../pages/cart/Cart';
 
 export default function App() {
   const [token, setToken] = useState(null);
@@ -39,18 +40,21 @@ export default function App() {
     });
   });
 
-  useEffect(() => {
+  const updateCart = () => {
     if(token) {
       request("api://cart").then(setCart);
     }
-  }, [token]);
+  }
 
-  return <AppContext.Provider value={{cart, token, setToken, request}}>
+  useEffect(updateCart, [token]);
+
+  return <AppContext.Provider value={{cart, token, setToken, request, updateCart}}>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Layout/>}>
           <Route index element={<Home />} />
           <Route path='admin' element={<Admin />} />
+          <Route path='cart' element={<Cart />} />
           <Route path='group/:slug' element={<Group />} />
           <Route path='privacy' element={<Privacy />} />
           <Route path='product/:slug' element={<Product />} />

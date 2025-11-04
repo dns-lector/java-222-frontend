@@ -41,10 +41,10 @@ export default function Layout() {
                                     </button>
                                   </>
                                 : <>
-                                    <button className="btn btn-outline-success me-2 cart-btn-layout">
+                                    <Link to="/cart" className="btn btn-outline-success me-3 cart-btn-layout">
                                         <i className="bi bi-cart"></i>
                                         <span>{cart.cartItems.length}</span>
-                                    </button>
+                                    </Link>
                                     
                                     <button className="btn btn-outline-secondary" 
                                             onClick={() => setToken(null)}>
