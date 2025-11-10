@@ -9,9 +9,11 @@ import Group from '../pages/group/Group';
 import Product from '../pages/product/Product';
 import Cart from '../pages/cart/Cart';
 
+const initialCart = {cartItems: []};
+
 export default function App() {
   const [token, setToken] = useState(null);
-  const [cart, setCart] = useState({cartItems: []});
+  const [cart, setCart] = useState(initialCart);
 
   const request = (url, conf) => new Promise((resolve, reject) => {
     const backUrl = "http://localhost:8080/JavaWeb222/";
@@ -42,7 +44,14 @@ export default function App() {
 
   const updateCart = () => {
     if(token) {
-      request("api://cart").then(setCart);
+      request("api://cart").then(data => {
+        if(data){ 
+          setCart(data);
+        }
+        else {
+          setCart(initialCart);
+        }
+      });
     }
   }
 

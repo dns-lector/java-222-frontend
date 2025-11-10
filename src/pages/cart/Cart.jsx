@@ -1,21 +1,57 @@
 import { useContext } from "react";
 import AppContext from "../../features/appContext/AppContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
-    const { cart } = useContext(AppContext);
+    const { cart, request, updateCart } = useContext(AppContext);
+    const navigate = useNavigate()
+
+    const buyCartClick = () => {
+        if(confirm("Підтвердити покупку?")) {   // TODO: включити в текст кількість товарів та ціну замовлення
+            request(`api://cart`, {
+                method: 'PUT'
+            })
+            .then(() => {
+                updateCart();
+                alert("Дякуємо за покупку!");
+            })
+            .catch(alert);
+        }
+    };
+    /*
+    Модифікувати роботу функції buyCartClick
+    Включити до повідомлення кількість товарів та ціну замовлення
+    Додати повідомлення у разі негативної відповіді сервера "Операція не виконана, повторіть пізніше"
+    */
 
     return <>
     <h1 className="display-5 my-3">Мій кошик</h1>
+
+    <button onClick={() => navigate("/")} className="btn btn-primary">
+        Продовжити покупки
+    </button>
+
     {(!cart || cart.cartItems.length == 0)
     ? <EmptyCart />
     : <>
-    <div className="row mb-3 bg-body-tertiary py-2">
+    <div className="row mb-3 bg-body-tertiary border-bottom py-2">
         <div className="col col-6">Товар </div>
         <div className="col col-1">Ціна</div>
         <div className="col col-3 text-center">Кількість</div>
         <div className="col col-1">Сума</div>
     </div>
     {cart.cartItems.map(ci => <CartItem key={ci.id} cartItem={ci} />)}
+    <div className="row mb-3 bg-body-tertiary  py-2">
+        <div className="v-center col col-7 text-end">Разом: </div>
+        <div className="v-center col col-3 text-center">{cart.cartItems.reduce((s, ci) => s + ci.quantity, 0)}</div>
+        <div className="v-center col col-1">{cart.price}</div>
+        <div className="v-center col col-1">
+            <button onClick={buyCartClick} className="btn btn-outline-success" title="Оформити покупку">
+                <i className="bi bi-cart-check"></i>
+            </button>
+        </div>
+    </div>
+
     </>}
     </>;
 }
@@ -40,10 +76,16 @@ function CartItem({cartItem}) {
     };
 
     const deleteClick = () => {
-        console.log(cartItem.id, "x");
+        if(confirm(`Підтверджуєте видалення позиції '${cartItem.product.name}' ${cartItem.quantity} шт?`)) {
+            request(`api://cart?cart-item-id=${cartItem.id}`, {
+                method: 'DELETE'
+            })
+            .then(updateCart)
+            .catch(alert);
+        }
     };
     
-    return <div className="row mb-3 border-bottom pb-3">
+    return <div className="row mt-3 border-bottom pb-3">
         <div className="col col-1">
             <img className="w-100" src={cartItem.product.imageUrl} alt={cartItem.product.name} />
         </div>
@@ -62,7 +104,7 @@ function CartItem({cartItem}) {
         <div className="col col-1">
             {cartItem.price} 
         </div>
-        <div className="col col-1">
+        <div className="col col-1 text-center">
             <i onClick={deleteClick} role="button" className="bi bi-x-lg"></i>
         </div>
     </div>;

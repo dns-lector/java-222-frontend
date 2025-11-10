@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import AppContext from "../../../features/appContext/AppContext";
 
 export default function ProductCard({product}) {
-    const {token, request} = useContext(AppContext);
+    const {cart, token, request, updateCart} = useContext(AppContext);
 
     const addToCartClick = (e) => {
         e.preventDefault();
@@ -13,9 +13,8 @@ export default function ProductCard({product}) {
         }
         request("api://cart?product-id=" + product.id, {
             method: "POST",
-        }).then(console.log).catch(console.log);
-
-        console.log(product.id);
+        }).then(updateCart)
+        .catch(console.log);
     }
 
     return <div className="col">
@@ -30,9 +29,12 @@ export default function ProductCard({product}) {
                     <span>
                         ₴ {product.price.toFixed(2)}
                     </span>
-                    <button onClick={addToCartClick} className="btn btn-outline-success">
+                    {cart.cartItems.some(ci=>ci.productId == product.id)
+                    ? <button>V</button>
+                    : <button onClick={addToCartClick} className="btn btn-outline-success">
                         <i className="bi bi-cart-plus"></i>
-                    </button>
+                    </button>}
+                    
                 </div>
             </div>
         </Link>

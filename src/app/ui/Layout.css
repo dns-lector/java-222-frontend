@@ -32,3 +32,8 @@ main {
   height: 1.5rem;
   text-align: center;
 }
+.v-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
