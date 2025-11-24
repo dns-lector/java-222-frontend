@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import AppContext from "../../features/appContext/AppContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Cart() {
     const { cart, request, updateCart } = useContext(AppContext);
@@ -87,7 +87,9 @@ function CartItem({cartItem}) {
     
     return <div className="row mt-3 border-bottom pb-3">
         <div className="col col-1">
-            <img className="w-100" src={cartItem.product.imageUrl} alt={cartItem.product.name} />
+            <Link className="w-100" to={"/product/" + (cartItem.product.slug || cartItem.product.id)}>
+                <img className="w-100" src={cartItem.product.imageUrl} alt={cartItem.product.name} />
+            </Link>
         </div>
         <div className="col col-5">
             <b className="fs-5">{cartItem.product.name}</b><br/>

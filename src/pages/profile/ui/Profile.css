@@ -1,0 +1,9 @@
+.cart-active {
+    background-color: rgb(192, 221, 246);
+}
+.cart-paid {
+    background-color:rgb(192, 246, 212);
+}
+.cart-deleted {
+    background-color:rgb(246, 205, 192);
+}
