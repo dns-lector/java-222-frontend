@@ -1,0 +1,19 @@
+.radio-container {
+    display: inline-flex;
+    flex-direction: row-reverse;
+}
+.radio-container label {
+    color: lightgray;
+    font-size: x-large;
+}
+.radio-container [type="radio"] {
+    visibility: hidden;
+    width: 0;
+    height: 0;
+    position: absolute;
+    z-index: -1;
+}
+.radio-container [type="radio"]:checked ~ label,
+.radio-container [type="radio"]:hover ~ label {
+    color: gold;
+}

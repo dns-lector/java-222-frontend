@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AppContext from "../../features/appContext/AppContext";
+import './ui/History.css';
 
 const _initialCart = {cartItems: []};
 
@@ -13,7 +14,7 @@ export default function History() {
     useEffect(() => {
         if(user && cartId) {
             request("api://cart/" + cartId).then(data => {
-                console.log(data);
+                // console.log(data);
                 if(data) {
                     _setCart(data);
                 }
@@ -49,20 +50,7 @@ export default function History() {
                         <div className="col col-1 text-center">Кількість</div>
                         <div className="col col-2 text-center">Сума</div>
                     </div>
-                    {_cart.cartItems.map(cartItem => <div key={cartItem.id} className="row mt-3 border-bottom pb-3">
-                        <div className="col col-2">
-                            <Link className="w-100" to={"/product/" + (cartItem.product.slug || cartItem.product.id)}>
-                                <img className="w-100" src={cartItem.product.imageUrl} alt={cartItem.product.name} />
-                            </Link>
-                        </div>
-                        <div className="col col-5">
-                            <b className="fs-5">{cartItem.product.name}</b><br/>
-                            <span className="text-muted fs-6">{cartItem.product.description}</span>
-                        </div>
-                        <div className="col col-2 text-center">{cartItem.product.price}</div>
-                        <div className="col col-1 text-center">{cartItem.quantity}</div>
-                        <div className="col col-2 text-center">{cartItem.price}</div>
-                    </div>)}
+                    {_cart.cartItems.map(cartItem => <CartItemRow key={cartItem.id} cartItem={cartItem} />)}
                     <div className="row mb-3 bg-body-tertiary  py-2">
                         <div className="v-center col col-2">
                             <button onClick={repeatClick} className="btn btn-outline-success" title="Повторити замовлення">
@@ -80,6 +68,69 @@ export default function History() {
 
 
     </>;
+}
+
+function CartItemRow({cartItem}) {
+
+    const [comment, setComment] = useState("");
+
+    const rateClick = () => {
+        const ciId = cartItem.id;
+        const productId = cartItem.product.id;
+        const rateInput = document.querySelector(`[name="${ciId}"]:checked`);
+        let rate = 0;
+        if(rateInput) rate = rateInput.value;
+
+        if(rate || comment) {
+            fetch("api://rate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8"
+                },
+                body: JSON.stringify({
+                    ciId,
+                    productId,
+                    rate,
+                    comment
+                })
+            }).then(console.log);
+        }
+        else {
+            alert("Потрібно зазначити або коментар, або оцінку");
+        }
+        //console.log(ciId, productId, comment, rate);
+    };
+
+    return <div className="row mt-3 border-bottom pb-3">
+        <div className="col col-2">
+            <Link className="w-100" to={"/product/" + (cartItem.product.slug || cartItem.product.id)}>
+                <img className="w-100" src={cartItem.product.imageUrl} alt={cartItem.product.name} />
+            </Link>
+        </div>
+        <div className="col col-5">
+            <b className="fs-5" title={cartItem.product.description}>{cartItem.product.name}</b>
+            
+            <div className="border p-2 mt-2">
+                <input type="text" placeholder="Відгук" className="w-100" 
+                    value={comment} onChange={e => setComment(e.target.value)}/>
+                <div className="d-flex justify-content-between mt-2">
+                    <div className="radio-container">
+                    <input type="radio" value="5" name={cartItem.id} id={cartItem.id +"_1"} /><label htmlFor={cartItem.id +"_1"}>★</label>
+                    <input type="radio" value="4" name={cartItem.id} id={cartItem.id +"_2"} /><label htmlFor={cartItem.id +"_2"}>★</label>
+                    <input type="radio" value="3" name={cartItem.id} id={cartItem.id +"_3"} /><label htmlFor={cartItem.id +"_3"}>★</label>
+                    <input type="radio" value="2" name={cartItem.id} id={cartItem.id +"_4"} /><label htmlFor={cartItem.id +"_4"}>★</label>
+                    <input type="radio" value="1" name={cartItem.id} id={cartItem.id +"_5"} /><label htmlFor={cartItem.id +"_5"}>★</label>
+                </div>
+                <button onClick={rateClick} className="btn btn-outline-info"><i className="bi bi-send-check"></i></button>
+                </div>
+                
+            </div>
+
+        </div>
+        <div className="col col-2 text-center">{cartItem.product.price}</div>
+        <div className="col col-1 text-center">{cartItem.quantity}</div>
+        <div className="col col-2 text-center">{cartItem.price}</div>
+    </div>;
 }
 /*
 Д.З. Функція повторення замовлення:
