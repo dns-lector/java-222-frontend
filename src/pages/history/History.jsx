@@ -72,6 +72,45 @@ export default function History() {
 
 function CartItemRow({cartItem}) {
 
+    return <div className="row mt-3 border-bottom pb-3">
+        <div className="col col-2">
+            <Link className="w-100" to={"/product/" + (cartItem.product.slug || cartItem.product.id)}>
+                <img className="w-100" src={cartItem.product.imageUrl} alt={cartItem.product.name} />
+            </Link>
+        </div>
+        <div className="col col-5">
+            <b className="fs-5" title={cartItem.product.description}>{cartItem.product.name}</b>
+
+            {cartItem.product.rate == null 
+            ? <RateWidget cartItem={cartItem} /> 
+            : <RateData cartItem={cartItem} />}
+            {/* TODO: реалізувати можливість редагування коментаря: при натисканні 
+                відповідної кнопки замінювати на RateWidget із заповненими даними */}
+            
+        </div>
+        <div className="col col-2 text-center">{cartItem.product.price}</div>
+        <div className="col col-1 text-center">{cartItem.quantity}</div>
+        <div className="col col-2 text-center">{cartItem.price}</div>
+    </div>;
+}
+
+function RateData({cartItem}) {
+    return <div className="border p-2 mt-2">
+        {cartItem.product.rate.createdAt}&thinsp;
+        Вами залишено коментар: <i>{cartItem.product.rate.text}</i><br/>
+        З оцінкою <b>{cartItem.product.rate.rateStars}</b>        
+    </div>;
+}
+/* Д.З. Реалізувати стилізацію RateData-блоку:
+   - дата: в "розумному" вигляді -- якщо це було сьогодні, то виводиться тільки час
+      якщо протягом тижня - виводиться у стилі "3 дні тому", "5 днів тому" + час
+      якщо більш давня - то тільки дата (без часу або час без секунд)
+   - оцінка (rateStars) - вивести "зірочками", використавши відповідну кількість
+      кольорових та "сірих" символів.
+ */
+
+function RateWidget({cartItem}) {
+    const {request} = useContext(AppContext);
     const [comment, setComment] = useState("");
 
     const rateClick = () => {
@@ -82,13 +121,13 @@ function CartItemRow({cartItem}) {
         if(rateInput) rate = rateInput.value;
 
         if(rate || comment) {
-            fetch("api://rate", {
+            request("api://rate", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json; charset=utf-8"
                 },
                 body: JSON.stringify({
-                    ciId,
+                    ciId: '1' + ciId.substring(1),
                     productId,
                     rate,
                     comment
@@ -101,35 +140,19 @@ function CartItemRow({cartItem}) {
         //console.log(ciId, productId, comment, rate);
     };
 
-    return <div className="row mt-3 border-bottom pb-3">
-        <div className="col col-2">
-            <Link className="w-100" to={"/product/" + (cartItem.product.slug || cartItem.product.id)}>
-                <img className="w-100" src={cartItem.product.imageUrl} alt={cartItem.product.name} />
-            </Link>
+    return <div className="border p-2 mt-2">
+        <input type="text" placeholder="Відгук" className="w-100" 
+            value={comment} onChange={e => setComment(e.target.value)}/>
+        <div className="d-flex justify-content-between mt-2">
+            <div className="radio-container">
+            <input type="radio" value="5" name={cartItem.id} id={cartItem.id +"_1"} /><label htmlFor={cartItem.id +"_1"}>★</label>
+            <input type="radio" value="4" name={cartItem.id} id={cartItem.id +"_2"} /><label htmlFor={cartItem.id +"_2"}>★</label>
+            <input type="radio" value="3" name={cartItem.id} id={cartItem.id +"_3"} /><label htmlFor={cartItem.id +"_3"}>★</label>
+            <input type="radio" value="2" name={cartItem.id} id={cartItem.id +"_4"} /><label htmlFor={cartItem.id +"_4"}>★</label>
+            <input type="radio" value="1" name={cartItem.id} id={cartItem.id +"_5"} /><label htmlFor={cartItem.id +"_5"}>★</label>
         </div>
-        <div className="col col-5">
-            <b className="fs-5" title={cartItem.product.description}>{cartItem.product.name}</b>
-            
-            <div className="border p-2 mt-2">
-                <input type="text" placeholder="Відгук" className="w-100" 
-                    value={comment} onChange={e => setComment(e.target.value)}/>
-                <div className="d-flex justify-content-between mt-2">
-                    <div className="radio-container">
-                    <input type="radio" value="5" name={cartItem.id} id={cartItem.id +"_1"} /><label htmlFor={cartItem.id +"_1"}>★</label>
-                    <input type="radio" value="4" name={cartItem.id} id={cartItem.id +"_2"} /><label htmlFor={cartItem.id +"_2"}>★</label>
-                    <input type="radio" value="3" name={cartItem.id} id={cartItem.id +"_3"} /><label htmlFor={cartItem.id +"_3"}>★</label>
-                    <input type="radio" value="2" name={cartItem.id} id={cartItem.id +"_4"} /><label htmlFor={cartItem.id +"_4"}>★</label>
-                    <input type="radio" value="1" name={cartItem.id} id={cartItem.id +"_5"} /><label htmlFor={cartItem.id +"_5"}>★</label>
-                </div>
-                <button onClick={rateClick} className="btn btn-outline-info"><i className="bi bi-send-check"></i></button>
-                </div>
-                
-            </div>
-
-        </div>
-        <div className="col col-2 text-center">{cartItem.product.price}</div>
-        <div className="col col-1 text-center">{cartItem.quantity}</div>
-        <div className="col col-2 text-center">{cartItem.price}</div>
+        <button onClick={rateClick} className="btn btn-outline-info"><i className="bi bi-send-check"></i></button>
+        </div>        
     </div>;
 }
 /*
