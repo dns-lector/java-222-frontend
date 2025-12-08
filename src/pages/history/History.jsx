@@ -127,7 +127,7 @@ function RateWidget({cartItem}) {
                     "Content-Type": "application/json; charset=utf-8"
                 },
                 body: JSON.stringify({
-                    ciId: '1' + ciId.substring(1),
+                    ciId: ciId,  // '1' + ciId.substring(1),
                     productId,
                     rate,
                     comment

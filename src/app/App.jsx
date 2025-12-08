@@ -58,6 +58,17 @@ export default function App() {
       });
     }
   }
+  
+  const addToCart = (product) => {
+      if(user == null) {
+          alert("Увійдіть у систему для здійснення покупок");
+          return;
+      }
+      request("api://cart?product-id=" + product.id, {
+          method: "POST",
+      }).then(updateCart)
+      .catch(console.log);
+  }
 
   useEffect(() => {
     updateCart();
@@ -81,7 +92,7 @@ export default function App() {
     }
   }, [token]);
 
-  return <AppContext.Provider value={{cart, user, setToken, request, updateCart}}>
+  return <AppContext.Provider value={{cart, user, setToken, request, updateCart, addToCart}}>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Layout/>}>

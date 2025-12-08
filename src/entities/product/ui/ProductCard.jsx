@@ -3,18 +3,11 @@ import { Link } from "react-router-dom";
 import AppContext from "../../../features/appContext/AppContext";
 
 export default function ProductCard({product}) {
-    const {cart, user, request, updateCart} = useContext(AppContext);
+    const {cart, addToCart} = useContext(AppContext);
 
     const addToCartClick = (e) => {
         e.preventDefault();
-        if(user == null) {
-            alert("Увійдіть у систему для здійснення покупок");
-            return;
-        }
-        request("api://cart?product-id=" + product.id, {
-            method: "POST",
-        }).then(updateCart)
-        .catch(console.log);
+        addToCart(product);
     }
 
     return <div className="col">
@@ -30,6 +23,10 @@ export default function ProductCard({product}) {
                     <span>
                         ₴ {product.price.toFixed(2)}
                     </span>
+                    <div title={(product.avgRate > 0 ? "Оцінка: " + product.avgRate.toFixed(1) + "\n" : "") + "Всього відгуків: " + (product.ratesCount || 0)}>
+                        {Array(Math.round(product.avgRate)).fill('★').join('')}
+                        {Array(5 - Math.round(product.avgRate)).fill('☆').join('')}
+                    </div>
                     {cart.cartItems.some(ci=>ci.productId == product.id)
                     ? <Link to="/cart" className="btn btn-success">
                         <i className="bi bi-cart-check"></i>
