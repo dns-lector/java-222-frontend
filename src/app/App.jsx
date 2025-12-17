@@ -19,7 +19,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [cart, setCart] = useState(initialCart);
 
-  const request = (url, conf) => new Promise((resolve, reject) => {
+  const request = (url, conf, isFull=false) => new Promise((resolve, reject) => {
     const backUrl = "http://localhost:8080/JavaWeb222/";
     url = url.replace("api://", backUrl);
     if(token) {
@@ -37,7 +37,7 @@ export default function App() {
     .then(r => r.json())
     .then(j => {
       if(j.status.isOk) {
-        resolve(j.data);
+        resolve(isFull ? j : j.data);
       }
       else {
         console.error(j);

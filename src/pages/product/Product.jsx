@@ -15,7 +15,7 @@ export default function Product() {
     const addToCartClick = () => {
         addToCart(product);
     }
-
+    
     return <>
     <h1>Сторінка товару {product.name}</h1>
     <div className="row">
@@ -36,13 +36,88 @@ export default function Product() {
                 </button>}
         </div>
         <div className="col col-2">
-            <div className="border p-2 mt-2">Місце здається під рекламу</div>
+            <div className="border p-2 mt-2">Місце здається під рекламу</div>            
+            <RatePaginator productId={product.id} />
+        </div>
+    </div>
+    
+    </>;
+}
 
-            {product.rates && product.rates.map(r => <div key={r.id} className="border p-2 mt-2">
-                {r.createdAt.substring(0,5)}&thinsp;
+function RatePaginator({productId}) {
+    const { request } = useContext(AppContext)
+    const [rates, setRates] = useState([]);
+    const [pagination, setPagination] = useState({
+        "currentPage": 1,
+        "lastPage": 1,
+        "perPage": 2,
+        "totalItems": -1
+    });
+
+    const loadRates = (pageNumber) => {
+        request(`api://rate/${productId}?page=${pageNumber}`, {}, true)
+        .then(r => {
+            setRates(r.data);
+            setPagination(r.meta.pagination);
+        });
+    };
+
+    useEffect(() => {
+        loadRates(1);        
+    }, [productId]);
+    
+
+    const isLastPage = pagination.currentPage >= pagination.lastPage;
+    const NextSymbol = () => <span aria-hidden="true">&raquo;</span>;
+    const nextPage = () => {
+        if(!isLastPage) loadRates(pagination.currentPage + 1);
+    };
+
+    return <div className="border p-2 mt-2">
+
+        { pagination.totalItems === 0 && 
+            <p>
+                Відгуків поки немає
+            </p>
+        }
+
+        { pagination.lastPage > 1 &&
+            <nav aria-label="Пагінація відгуків">
+                <ul className="pagination">
+                    <li className="page-item">
+                        <span className="page-link" role="button" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </span>
+                    </li>
+                    <li className="page-item"><a className="page-link" href="#">{pagination.currentPage - 1}</a></li>
+                    <li className="page-item"><a className="page-link" href="#">{pagination.currentPage}</a></li>
+                    <li className="page-item"><a className="page-link" href="#">{pagination.currentPage + 1}</a></li>
+                    
+                    {isLastPage 
+                    ? <li className="page-item disabled">
+                            <span className="page-link" >
+                                <NextSymbol />
+                            </span>
+                        </li>
+                    : <li className="page-item">
+                            <span className="page-link" role="button" aria-label="Next" onClick={nextPage}>
+                                <NextSymbol />
+                            </span>
+                        </li>
+                    }
+                    
+
+                </ul>
+            </nav>
+        }
+        
+        
+        {rates && rates.map(r => 
+            <div key={r.id} className="border p-2 mt-2">
+                {r.createdAt.substring(0,6)}&thinsp;
                 <a href={"mailto:" + r.user.email} title={r.user.name + ' ' + r.user.email}>
                     {r.user.name.split(' ').map(x => x.substring(0,1)).join('')}
-                </a>&thinsp;
+                </a>&thinsp; 
                 Коментар: {r.text && r.text.length > 0
                     ? <i>{r.text}</i>
                     : <span title="Немає коментаря">--</span>}
@@ -50,11 +125,9 @@ export default function Product() {
                 Оцінка: {r.rateStars > 0 
                     ? <b>{r.rateStars}</b> 
                     : <span title="Немає оцінки">--</span>}  
-            </div>)}
-        </div>
-    </div>
-    
-    </>;
+            </div>
+        )}
+    </div>;
 }
 /*
 Д.З. Реалізувати виведення (відображення) дробних середніх оцінок
